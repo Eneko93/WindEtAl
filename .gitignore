@@ -1,0 +1,11 @@
+@"
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.pytest_cache/
+data/raw/
+.DS_Store
+"@ | Set-Content .gitignore
