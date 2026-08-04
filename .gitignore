@@ -1,4 +1,3 @@
-@"
 __pycache__/
 *.py[cod]
 .venv/
@@ -8,4 +7,3 @@ venv/
 .pytest_cache/
 data/raw/
 .DS_Store
-"@ | Set-Content .gitignore
