@@ -48,6 +48,17 @@ Window chosen deliberately: a pre-October-2025 hourly period, which avoids the `
 - **Negative prices occur in this window.** This is real market behaviour, not a data error. Captured price and time-average price can both be negative; the domain must not assume positivity.
 - **Request window is in Danish local time** while records are keyed on `HourUTC`. June 2025 therefore means Danish June — the first record is `HourUTC 2025-05-31T22:00` = `HourDK 2025-06-01T00:00`.
 
+### Verified against the live API (2026-08-09)
+
+Ad hoc calls against the real, tokenless endpoints, run to settle open questions before writing the adapter:
+
+- **`end` is exclusive.** A request for Danish-local `00:00`–`02:00` returned exactly 2 records (the `00:00` and `01:00` hours); the `02:00` hour itself was not included. Confirms the API guide's own `start=2022-05-01&end=2022-06-01` "= May" example. The adapter must send `period.end + 1 hour` as the API's `end`, since `DateRange.end` is documented as the last *included* hour.
+- **Default sort is descending.** An unsorted request came back newest-first (`23:00` before `22:00`). Order is not incidental — it must be requested explicitly if ascending order is needed.
+- **Naive, timezone-less timestamps in `start`/`end` are read as Danish local time.** Sending `2022-05-01T00:00` with no offset returned `HourUTC` rows 2 hours earlier (`2022-04-30T22:00`/`23:00`), consistent with May's CEST (UTC+2) offset. Reinforces the note above — the adapter must convert `DateRange`'s UTC datetimes to Danish local time before sending them, not just before reasoning about the result.
+- **An unrecognized filter value does not error, and does not get ignored.** `{"PriceArea":["DK1"],"ProductionType":["NotARealType"]}` returned HTTP 200 with `"total": 0` and empty `records` — a plausible-looking empty result, not an exception. A row-count guard (`len(records) == total`) is what catches a filter typo; nothing else will.
+- **A plain (non-`str`) `Enum` does not interpolate to its value.** `f"{Zone.DK1}"` renders `"Zone.DK1"`, not `"DK1"`. The adapter must use `zone.value`.
+- **`sort=HourUTC` produces ascending order.** Confirmed by calling `EnerginetRepo._fetch` directly against both live endpoints — records came back oldest-first for a known 3-hour window, with `len(records) == total` in both cases.
+
 ---
 
 ## 3. Domain model (`libs/core`)
@@ -76,7 +87,7 @@ value_factor(series)        -> ValueFactorResult
 
 ### Boundary decisions
 
-- **Filtering and mismatched input are handled in the adapter, not the domain.** The domain trusts the port's contract; series alignment is guaranteed by the adapter.
+- **Filtering and mismatched input are handled in the adapter, not the domain.** The domain trusts the port's contract; series alignment is guaranteed by the domain, as the adapter gets the series independently.
 - A calculation that is specific to the statistics of the problem belongs in the domain.
 - The domain output carries the computed metrics only. It knows nothing about plots, charts, or presentation.
 

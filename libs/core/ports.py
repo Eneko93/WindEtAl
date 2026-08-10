@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
 
-from series import PriceSeries, GenerationSeries
+from libs.core.series import PriceSeries, GenerationSeries
 
 
 class Zone(Enum):
@@ -38,9 +38,9 @@ class DateRange:
 
 class EnergyDataRepo(ABC):
     @abstractmethod
-    def get_wind_prices(self, zone: Zone, period: DateRange) -> PriceSeries:
+    def get_prices(self, zone: Zone, period: DateRange) -> PriceSeries:
         raise NotImplementedError
 
     @abstractmethod
-    def get_wind_generation(self, zone: Zone, period: DateRange) -> GenerationSeries:
+    def get_generation(self, zone: Zone, period: DateRange) -> GenerationSeries:
         raise NotImplementedError

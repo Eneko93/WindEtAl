@@ -1,0 +1,200 @@
+{
+  "total": 48,
+  "filters": "{\"PriceArea\": [\"DK1\"], \"FuelAllocationMethod\": [\"All\"], \"ProductionType\": [\"WindOnshore\"]}",
+  "sort": "HourUTC ASC",
+  "dataset": "DeclarationProduction",
+  "records": [
+    {
+      "HourUTC": "2025-05-31T22:00:00",
+      "Production_MWh": 331.259613
+    },
+    {
+      "HourUTC": "2025-05-31T23:00:00",
+      "Production_MWh": 424.201224
+    },
+    {
+      "HourUTC": "2025-06-01T00:00:00",
+      "Production_MWh": 570.075988
+    },
+    {
+      "HourUTC": "2025-06-01T01:00:00",
+      "Production_MWh": 712.808138
+    },
+    {
+      "HourUTC": "2025-06-01T02:00:00",
+      "Production_MWh": 795.068788
+    },
+    {
+      "HourUTC": "2025-06-01T03:00:00",
+      "Production_MWh": 710.617903
+    },
+    {
+      "HourUTC": "2025-06-01T04:00:00",
+      "Production_MWh": 572.510269
+    },
+    {
+      "HourUTC": "2025-06-01T05:00:00",
+      "Production_MWh": 445.717277
+    },
+    {
+      "HourUTC": "2025-06-01T06:00:00",
+      "Production_MWh": 359.479115
+    },
+    {
+      "HourUTC": "2025-06-01T07:00:00",
+      "Production_MWh": 331.106838
+    },
+    {
+      "HourUTC": "2025-06-01T08:00:00",
+      "Production_MWh": 264.437992
+    },
+    {
+      "HourUTC": "2025-06-01T09:00:00",
+      "Production_MWh": 237.873946
+    },
+    {
+      "HourUTC": "2025-06-01T10:00:00",
+      "Production_MWh": 228.09457
+    },
+    {
+      "HourUTC": "2025-06-01T11:00:00",
+      "Production_MWh": 282.680753
+    },
+    {
+      "HourUTC": "2025-06-01T12:00:00",
+      "Production_MWh": 325.592137
+    },
+    {
+      "HourUTC": "2025-06-01T13:00:00",
+      "Production_MWh": 357.850478
+    },
+    {
+      "HourUTC": "2025-06-01T14:00:00",
+      "Production_MWh": 354.106111
+    },
+    {
+      "HourUTC": "2025-06-01T15:00:00",
+      "Production_MWh": 503.076263
+    },
+    {
+      "HourUTC": "2025-06-01T16:00:00",
+      "Production_MWh": 708.508862
+    },
+    {
+      "HourUTC": "2025-06-01T17:00:00",
+      "Production_MWh": 906.22102
+    },
+    {
+      "HourUTC": "2025-06-01T18:00:00",
+      "Production_MWh": 1011.34145
+    },
+    {
+      "HourUTC": "2025-06-01T19:00:00",
+      "Production_MWh": 866.697019
+    },
+    {
+      "HourUTC": "2025-06-01T20:00:00",
+      "Production_MWh": 820.034869
+    },
+    {
+      "HourUTC": "2025-06-01T21:00:00",
+      "Production_MWh": 763.894317
+    },
+    {
+      "HourUTC": "2025-06-01T22:00:00",
+      "Production_MWh": 691.240624
+    },
+    {
+      "HourUTC": "2025-06-01T23:00:00",
+      "Production_MWh": 781.391082
+    },
+    {
+      "HourUTC": "2025-06-02T00:00:00",
+      "Production_MWh": 924.360509
+    },
+    {
+      "HourUTC": "2025-06-02T01:00:00",
+      "Production_MWh": 925.093056
+    },
+    {
+      "HourUTC": "2025-06-02T02:00:00",
+      "Production_MWh": 898.730531
+    },
+    {
+      "HourUTC": "2025-06-02T03:00:00",
+      "Production_MWh": 872.218633
+    },
+    {
+      "HourUTC": "2025-06-02T04:00:00",
+      "Production_MWh": 783.597597
+    },
+    {
+      "HourUTC": "2025-06-02T05:00:00",
+      "Production_MWh": 808.16931
+    },
+    {
+      "HourUTC": "2025-06-02T06:00:00",
+      "Production_MWh": 952.713517
+    },
+    {
+      "HourUTC": "2025-06-02T07:00:00",
+      "Production_MWh": 994.178569
+    },
+    {
+      "HourUTC": "2025-06-02T08:00:00",
+      "Production_MWh": 1114.897109
+    },
+    {
+      "HourUTC": "2025-06-02T09:00:00",
+      "Production_MWh": 1248.608862
+    },
+    {
+      "HourUTC": "2025-06-02T10:00:00",
+      "Production_MWh": 1378.962925
+    },
+    {
+      "HourUTC": "2025-06-02T11:00:00",
+      "Production_MWh": 1459.914536
+    },
+    {
+      "HourUTC": "2025-06-02T12:00:00",
+      "Production_MWh": 1501.674031
+    },
+    {
+      "HourUTC": "2025-06-02T13:00:00",
+      "Production_MWh": 1588.969899
+    },
+    {
+      "HourUTC": "2025-06-02T14:00:00",
+      "Production_MWh": 1575.362916
+    },
+    {
+      "HourUTC": "2025-06-02T15:00:00",
+      "Production_MWh": 1544.827925
+    },
+    {
+      "HourUTC": "2025-06-02T16:00:00",
+      "Production_MWh": 1524.712814
+    },
+    {
+      "HourUTC": "2025-06-02T17:00:00",
+      "Production_MWh": 1339.48187
+    },
+    {
+      "HourUTC": "2025-06-02T18:00:00",
+      "Production_MWh": 994.199827
+    },
+    {
+      "HourUTC": "2025-06-02T19:00:00",
+      "Production_MWh": 754.009457
+    },
+    {
+      "HourUTC": "2025-06-02T20:00:00",
+      "Production_MWh": 633.135553
+    },
+    {
+      "HourUTC": "2025-06-02T21:00:00",
+      "Production_MWh": 553.462659
+    }
+  ]
+}
