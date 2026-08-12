@@ -4,7 +4,7 @@ _Module: M1 · Status: **critiqued, gate cleared** · Owner: Eneko_
 _Repo location: `modules/m1_market_economics/DESIGN.md` (or `docs/design/`)_
 
 > **Gate status:** This document passed critique. Code may begin.
-> First task: write the failing test `test_wind_val_factor_calc` (§8), then implement `value_factor()` in `libs/core`.
+> First task: write the failing test `test_value_factor_simple_int` (§8), then implement `value_factor()` in `libs/core`.
 
 ---
 
@@ -87,13 +87,13 @@ value_factor(series)        -> ValueFactorResult
 
 ### Boundary decisions
 
-- **Filtering and mismatched input are handled in the adapter, not the domain.** The domain trusts the port's contract; series alignment is guaranteed by the domain, as the adapter gets the series independently.
+- Series alignment is a domain fact, not transport logic. The port returns prices and generation independently; the PriceVolumeSeries constructor joins them on HourUTC and raises on mismatch. See ADR 001. Adapters own filtering and parsing; they do not own alignment.
 - A calculation that is specific to the statistics of the problem belongs in the domain.
 - The domain output carries the computed metrics only. It knows nothing about plots, charts, or presentation.
 
-### Open — resolve while coding
+### Resolved
 
-The port exposes `get_prices` and `get_generation` separately, so something must join them on `HourUTC` to form a `PriceVolumeSeries`. Where that join lives (adapter, app layer, or a domain constructor) is deliberately left for TDD to surface.
+Join location → ADR 001: the PriceVolumeSeries constructor. See the boundary decisions above.
 
 ---
 
@@ -168,7 +168,7 @@ The output should answer: **when does wind earn, relative to the market average?
 
 **Domain first.** A short hand-computed series, asserted against a number calculated independently beforehand. Location: `tests/unit`. Integration tests follow later.
 
-### `test_wind_val_factor_calc`
+### `test_value_factor_simple_int`
 
 Three hours of data:
 
@@ -195,8 +195,46 @@ Three hours of data:
 
 **Assertion**
 ```python
-assert value_factor(series).value_factor == pytest.approx(0.9252, rel=1e-3)
+assert result.value_factor == pytest.approx(0.925177, rel=1e-5)
 ```
+### `test_value_factor_matches_expected_ratio` — 10-hour case
+
+A longer series, hand-derived independently of the implementation. Verified by exact rational arithmetic (2026-08-10).
+
+| Hour | Price (€/MWh) | Wind generation (MWh) | Revenue (€) |
+|---|---|---|---|
+| 1 | 25 | 23 | 575 |
+| 2 | 40 | 16 | 640 |
+| 3 | 42 | 15 | 630 |
+| 4 | 46 | 13 | 598 |
+| 5 | 48 | 11 | 528 |
+| 6 | 50 | 21 | 1050 |
+| 7 | 30 | 18 | 540 |
+| 8 | 35 | 17 | 595 |
+| 9 | 32 | 17.5 | 560 |
+| 10 | 28 | 18.5 | 518 |
+
+**Time-average price**
+```
+376 / 10 = 37.6 €/MWh
+```
+
+**Captured price (volume-weighted)**
+```
+6234 / 170 = 3117/85 = 36.670588 €/MWh
+```
+
+**Value factor**
+```
+3117 / 3196 = 0.9752816
+```
+
+**Assertion**
+```python
+assert value_factor(series).value_factor == pytest.approx(0.97528, rel=1e-5)
+```
+
+**Why both cases.** The 3-hour case is small enough to check by inspection; the 10-hour case exercises a non-trivial volume distribution and a fractional MWh value. Both expected values are derived from the table above, not from program output.
 
 ### Subsequent tests
 

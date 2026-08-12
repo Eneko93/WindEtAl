@@ -1,22 +1,24 @@
 # Economics
 from dataclasses import dataclass
+from datetime import datetime
 
-import numpy as np
-import pandas as pd
+from collections.abc import (
+    Sequence,
+)  # accepts either a list or tuple from the adapter side without forcing a concrete container in the domain's contract.
 
 
 @dataclass(frozen=True)
 class PriceVolumeSeries:
-    price: pd.Series
-    volume: pd.Series
+    timestamps: Sequence[datetime]  # HourUTC, tz-aware — canonical per §2
+    price: Sequence[float]
+    volume: Sequence[float]
 
     def __post_init__(self) -> None:
-        if len(self.price) != len(self.volume):
+        if not (len(self.timestamps) == len(self.price) == len(self.volume)):
             raise ValueError(
-                f"price and volume must have equal length, got {len(self.price)} and {len(self.volume)}"
+                f"timestamps, price, and volume must have equal length, got "
+                f"{len(self.timestamps)}, {len(self.price)}, {len(self.volume)}"
             )
-        if not self.price.index.equals(self.volume.index):
-            raise ValueError("price and volume must be aligned on HourUTC")
 
 
 @dataclass(frozen=True)
@@ -32,11 +34,12 @@ class ValueFactorResult:
 
 
 def captured_price(series: PriceVolumeSeries) -> float:
-    return float(np.sum(series.price * series.volume) / np.sum(series.volume))
+    revenue = sum(p * v for p, v in zip(series.price, series.volume, strict=True))
+    return revenue / sum(series.volume)
 
 
 def time_average_price(series: PriceVolumeSeries) -> float:
-    return float(np.mean(series.price))
+    return sum(series.price) / len(series.price)
 
 
 def value_factor(series: PriceVolumeSeries) -> ValueFactorResult:
