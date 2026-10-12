@@ -35,6 +35,7 @@ class EnerginetRepo(EnergyDataRepo):
                 "PriceArea": [zone.value],
                 "FuelAllocationMethod": ["All"],
                 "ProductionType": ["WindOnshore"],
+                "Version": ["Final"],
             },
             columns="HourUTC,Production_MWh",
         )

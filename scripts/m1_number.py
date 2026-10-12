@@ -1,7 +1,7 @@
 """M1 scratch composition: DK1 onshore wind value factor, June 2025 (Danish time).
 
-Throwaway by design. Replaced by a composition root in M2 (see M1 ship-week debt list).
-Run from the repo root:  uv run python -m scripts.m1_number
+M1 entry point: wires the Energinet adapter -> domain join -> value factor, then writes
+the result file and chart 2. Run from the repo root:  uv run python -m scripts.m1_number
 """
 
 import math
@@ -74,18 +74,14 @@ def main() -> None:
     prices = repo.get_prices(Zone.DK1, PERIOD)
     generation = repo.get_generation(Zone.DK1, PERIOD)
 
-    # ADR 001: timestamps must align exactly. Mismatch raises; no fill, no drop.
+    # Pull-time checks: 720 describes this request, not the type (architecture notes §6).
     assert len(prices.timestamps) == EXPECTED_HOURS, f"prices: {len(prices.timestamps)} rows"
     assert len(generation.timestamps) == EXPECTED_HOURS, f"generation: {len(generation.timestamps)} rows"
-    assert prices.timestamps == generation.timestamps, "HourUTC mismatch between prices and generation"
     assert not any(math.isnan(p) for p in prices.prices), "NaN in prices"
     assert not any(math.isnan(v) for v in generation.volumes), "NaN in volumes"
 
-    series = PriceVolumeSeries(
-        timestamps=prices.timestamps,
-        price=prices.prices,
-        volume=generation.volumes,
-    )
+    # ADR 0002: the domain joins on HourUTC and raises MisalignedSeriesError on any mismatch.
+    series = PriceVolumeSeries.from_series(prices, generation)
     result = value_factor(series)
 
     low, high = SANITY_BAND
