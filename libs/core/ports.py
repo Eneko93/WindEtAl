@@ -17,9 +17,10 @@ class DateRange:
     """An inclusive time window in UTC.
 
     Both endpoints are hour-resolution timestamps, and both are
-    included: June 2025 is 2025-06-01T00:00Z to 2025-06-30T23:00Z,
-    which is 720 hours. Note that `end` is an hour, not a day —
-    passing 2025-06-30T00:00Z gives 697 hours, not 720.
+    included: June 2025 in Danish time (CEST, UTC+2) is
+    2025-05-31T22:00Z to 2025-06-30T21:00Z, which is 720 hours.
+    Note that `end` is an hour, not a day — passing
+    2025-06-30T00:00Z instead gives 699 hours, not 720.
 
     Datetimes must be timezone-aware and in UTC, matching HourUTC,
     the canonical timestamp of the domain. This is a domain

@@ -1,7 +1,7 @@
 # M1 Design Doc — DK1 Onshore Wind Value Factor
 
 _Module: M1 · Status: **critiqued, gate cleared** · Owner: Eneko_
-_Repo location: `modules/m1_market_economics/DESIGN.md` (or `docs/design/`)_
+_Repo location: `docs/design/M1-Design-Doc.md`_
 
 > **Gate status:** This document passed critique. Code may begin.
 > First task: write the failing test `test_value_factor_simple_int` (§8), then implement `value_factor()` in `libs/core`.
@@ -87,13 +87,13 @@ value_factor(series)        -> ValueFactorResult
 
 ### Boundary decisions
 
-- Series alignment is a domain fact, not transport logic. The port returns prices and generation independently; the PriceVolumeSeries constructor joins them on HourUTC and raises on mismatch. See ADR 001. Adapters own filtering and parsing; they do not own alignment.
+- Series alignment is a domain fact, not transport logic. The port returns prices and generation independently; the PriceVolumeSeries constructor joins them on HourUTC and raises on mismatch. See [ADR 0002](../adr/0002-join-location.md). Adapters own filtering and parsing; they do not own alignment.
 - A calculation that is specific to the statistics of the problem belongs in the domain.
 - The domain output carries the computed metrics only. It knows nothing about plots, charts, or presentation.
 
 ### Resolved
 
-Join location → ADR 001: the PriceVolumeSeries constructor. See the boundary decisions above.
+Join location → [ADR 0002](../adr/0002-join-location.md): `PriceVolumeSeries.from_series`, raising `MisalignedSeriesError`. See the boundary decisions above.
 
 ---
 
@@ -143,6 +143,11 @@ Join location → ADR 001: the PriceVolumeSeries constructor. See the boundary d
    > "On 29 June, DK1 wind hit peak output during the only hours the price went negative."
 
 The output should answer: **when does wind earn, relative to the market average?**
+
+> **Shipped (2026-10-12):** chart 2 only, titled from the result: _"DK1 onshore wind earned
+> 16% less than the average power price in June 2025."_ Charts 1 and 3 were **descoped from
+> M1** in the ship-week plan to protect the deadline. Chart 3's title was written before the
+> data and is an unverified claim; check it before reusing it.
 
 ---
 

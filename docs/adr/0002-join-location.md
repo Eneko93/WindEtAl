@@ -1,8 +1,8 @@
 # 001 — Where the price/generation join on `HourUTC` lives
 
-_Decision 001 · Created 2026-08-09 · Owner: Eneko · Status: **Accepted** · Module: M1_
+_ADR 0002 (formerly decision 001, moved from `docs/design/` 2026-10-12) · Created 2026-08-09 · Owner: Eneko · Status: **Accepted** · Module: M1_
 
-> Flagged as open in `M1-Design-Doc.md` §3 ("Open — resolve while coding") and carried in `Learning-Current-State.md` as decision log entry #1. Resolved during adapter implementation, before the full June 2025 pull.
+> Flagged as open in `M1-Design-Doc.md` §3 ("Open — resolve while coding") and carried in the architecture notes (`../design/WindEtAl-Architecture-Reasoning.md` §10) as decision log entry #1. Resolved during adapter implementation, before the full June 2025 pull.
 
 ---
 
@@ -81,9 +81,9 @@ Raise a domain error naming the mismatch.
 
 ## 5. Follow-up actions
 
-- [ ] **Correct design doc §3.** It currently reads *"series alignment is guaranteed by the adapter."* That is now false and would mislead a future reader into implementing the rejected option.
-- [ ] Write the failing test first: two series with a mismatched hour → asserts raise. Include an **equal-length but shifted** case, which is the only one that catches a positional join.
-- [ ] Add the domain error type to the error-translation work deferred from §5.
+- [x] **Correct design doc §3.** Done: §3 now places the join in the `PriceVolumeSeries` constructor and links here.
+- [x] Write the failing test first: two series with a mismatched hour → asserts raise. Include an **equal-length but shifted** case, which is the only one that catches a positional join.
+- [x] Add the domain error type: `MisalignedSeriesError` in `libs/core/economics.py`, raised by `PriceVolumeSeries.from_series`. Tests: `tests/unit/test_join.py` (2026-10-12).
 
 ---
 

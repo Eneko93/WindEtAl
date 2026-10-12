@@ -232,11 +232,15 @@ The 720-vs-720 match between the two datasets is a **join-time** check, not a ty
 
 ### Validation: trust or check?
 
+> **Superseded by [ADR 0002](../adr/0002-join-location.md) (2026-08-09).** The domain no longer trusts the adapter for alignment: `PriceVolumeSeries.from_series` joins on `HourUTC` and raises `MisalignedSeriesError` on any mismatch. The original reasoning is kept below for the record.
+
 §3 of the design doc says the domain **trusts the adapter**. The adapter guarantees alignment; `PriceVolumeSeries` does not re-verify it. Consequence: if the adapter is wrong, the domain silently computes a wrong number. Accepted for M1 because the adapter is the only producer and it is tested. Worth revisiting when a second source appears in M2.
 
 ---
 
-## 7. Open decision — where the join lives
+## 7. Decision — where the join lives
+
+> **Resolved by [ADR 0002](../adr/0002-join-location.md): domain constructor joins, raises on mismatch.** The options as originally weighed are kept below.
 
 `value_factor()` needs one `PriceVolumeSeries`: timestamps, price, volume. The port returns two objects. Something must join them on `HourUTC`.
 
@@ -248,7 +252,7 @@ The 720-vs-720 match between the two datasets is a **join-time** check, not a ty
 
 **The question that settles it:** when 720 prices meet 719 generation rows, where do you want to find out? Whichever component discovers the mismatch is the one that should own the join.
 
-Unresolved by design — §3 defers it to TDD. **This is decision log entry #1.**
+Originally left unresolved — §3 deferred it to TDD. **This was decision log entry #1**, now ADR 0002.
 
 ---
 ## 8. DateRange as a validated type
@@ -265,7 +269,9 @@ Consequence. An invalid range cannot exist. Callers get the error at constructio
 
 Context. HourUTC is the canonical domain timestamp. Energinet's start/end query params are Danish local time. A range also needs an inclusivity convention.
 
-Decision. DateRange carries tz-aware UTC datetimes. The interval is closed — end is included and is an hour, not a day. June 2025 = 2025-06-01T00:00Z → 2025-06-30T23:00Z, 720 hours.
+Decision. DateRange carries tz-aware UTC datetimes. The interval is closed — end is included and is an hour, not a day. June 2025 in Danish time (the M1 window, design doc §2) = 2025-05-31T22:00Z → 2025-06-30T21:00Z, 720 hours.
+
+> **Corrected 2026-10-12.** This example originally read 2025-06-01T00:00Z → 2025-06-30T23:00Z, the UTC month. That is also 720 hours, so the row-count check below cannot tell the two apart. M1 uses the Danish month.
 
 Note. This does not change Energinet's API. The local-time conversion stays in the adapter (design doc §5). Domain convention and API convention are independent.
 
@@ -278,9 +284,9 @@ Short entries, `docs/decisions/`. Format: context → options → choice → con
 | # | Decision | Status |
 |---|---|---|
 | 0 | Port in `ports.py`, separate from `economics.py` — different reasons to change | Decided |
-| 1 | Where the price/generation join lives | **Open — resolve in code** |
+| 1 | Where the price/generation join lives | Decided — [ADR 0002](../adr/0002-join-location.md) |
 | 2 | `PriceSeries` / `GenerationSeries` distinct rather than one shared type — prevents silent argument-swap bug | Decided |
-| 3 | Domain trusts adapter for alignment; no self-validation in the type | Decided, revisit in M2 |
+| 3 | Domain trusts adapter for alignment; no self-validation in the type | Superseded by ADR 0002 |
 | 4 | `requests` sync over `httpx` async — no concurrency pressure | Decided (design doc §5) |
 | 5 | DateRange added as a validated type in its own data class
 | 6 | UTC used for timezone, as a closed interval
