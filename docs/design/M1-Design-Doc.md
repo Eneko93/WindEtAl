@@ -1,10 +1,10 @@
 # M1 Design Doc — DK1 Onshore Wind Value Factor
 
 _Module: M1 · Status: **critiqued, gate cleared** · Owner: Eneko_
-_Repo location: `modules/m1_market_economics/DESIGN.md` (or `docs/design/`)_
+_Repo location: `docs/design/M1-Design-Doc.md`_
 
 > **Gate status:** This document passed critique. Code may begin.
-> First task: write the failing test `test_wind_val_factor_calc` (§8), then implement `value_factor()` in `libs/core`.
+> First task: write the failing test `test_value_factor_simple_int` (§8), then implement `value_factor()` in `libs/core`.
 
 ---
 
@@ -48,6 +48,17 @@ Window chosen deliberately: a pre-October-2025 hourly period, which avoids the `
 - **Negative prices occur in this window.** This is real market behaviour, not a data error. Captured price and time-average price can both be negative; the domain must not assume positivity.
 - **Request window is in Danish local time** while records are keyed on `HourUTC`. June 2025 therefore means Danish June — the first record is `HourUTC 2025-05-31T22:00` = `HourDK 2025-06-01T00:00`.
 
+### Verified against the live API (2026-08-09)
+
+Ad hoc calls against the real, tokenless endpoints, run to settle open questions before writing the adapter:
+
+- **`end` is exclusive.** A request for Danish-local `00:00`–`02:00` returned exactly 2 records (the `00:00` and `01:00` hours); the `02:00` hour itself was not included. Confirms the API guide's own `start=2022-05-01&end=2022-06-01` "= May" example. The adapter must send `period.end + 1 hour` as the API's `end`, since `DateRange.end` is documented as the last *included* hour.
+- **Default sort is descending.** An unsorted request came back newest-first (`23:00` before `22:00`). Order is not incidental — it must be requested explicitly if ascending order is needed.
+- **Naive, timezone-less timestamps in `start`/`end` are read as Danish local time.** Sending `2022-05-01T00:00` with no offset returned `HourUTC` rows 2 hours earlier (`2022-04-30T22:00`/`23:00`), consistent with May's CEST (UTC+2) offset. Reinforces the note above — the adapter must convert `DateRange`'s UTC datetimes to Danish local time before sending them, not just before reasoning about the result.
+- **An unrecognized filter value does not error, and does not get ignored.** `{"PriceArea":["DK1"],"ProductionType":["NotARealType"]}` returned HTTP 200 with `"total": 0` and empty `records` — a plausible-looking empty result, not an exception. A row-count guard (`len(records) == total`) is what catches a filter typo; nothing else will.
+- **A plain (non-`str`) `Enum` does not interpolate to its value.** `f"{Zone.DK1}"` renders `"Zone.DK1"`, not `"DK1"`. The adapter must use `zone.value`.
+- **`sort=HourUTC` produces ascending order.** Confirmed by calling `EnerginetRepo._fetch` directly against both live endpoints — records came back oldest-first for a known 3-hour window, with `len(records) == total` in both cases.
+
 ---
 
 ## 3. Domain model (`libs/core`)
@@ -76,13 +87,13 @@ value_factor(series)        -> ValueFactorResult
 
 ### Boundary decisions
 
-- **Filtering and mismatched input are handled in the adapter, not the domain.** The domain trusts the port's contract; series alignment is guaranteed by the adapter.
+- Series alignment is a domain fact, not transport logic. The port returns prices and generation independently; the PriceVolumeSeries constructor joins them on HourUTC and raises on mismatch. See [ADR 0002](../adr/0002-join-location.md). Adapters own filtering and parsing; they do not own alignment.
 - A calculation that is specific to the statistics of the problem belongs in the domain.
 - The domain output carries the computed metrics only. It knows nothing about plots, charts, or presentation.
 
-### Open — resolve while coding
+### Resolved
 
-The port exposes `get_prices` and `get_generation` separately, so something must join them on `HourUTC` to form a `PriceVolumeSeries`. Where that join lives (adapter, app layer, or a domain constructor) is deliberately left for TDD to surface.
+Join location → [ADR 0002](../adr/0002-join-location.md): `PriceVolumeSeries.from_series`, raising `MisalignedSeriesError`. See the boundary decisions above.
 
 ---
 
@@ -133,6 +144,11 @@ The port exposes `get_prices` and `get_generation` separately, so something must
 
 The output should answer: **when does wind earn, relative to the market average?**
 
+> **Shipped (2026-10-12):** chart 2 only, titled from the result: _"DK1 onshore wind earned
+> 16% less than the average power price in June 2025."_ Charts 1 and 3 were **descoped from
+> M1** in the ship-week plan to protect the deadline. Chart 3's title was written before the
+> data and is an unverified claim; check it before reusing it.
+
 ---
 
 ## 7. Explicitly OUT
@@ -157,7 +173,7 @@ The output should answer: **when does wind earn, relative to the market average?
 
 **Domain first.** A short hand-computed series, asserted against a number calculated independently beforehand. Location: `tests/unit`. Integration tests follow later.
 
-### `test_wind_val_factor_calc`
+### `test_value_factor_simple_int`
 
 Three hours of data:
 
@@ -184,8 +200,46 @@ Three hours of data:
 
 **Assertion**
 ```python
-assert value_factor(series).value_factor == pytest.approx(0.9252, rel=1e-3)
+assert result.value_factor == pytest.approx(0.925177, rel=1e-5)
 ```
+### `test_value_factor_matches_expected_ratio` — 10-hour case
+
+A longer series, hand-derived independently of the implementation. Verified by exact rational arithmetic (2026-08-10).
+
+| Hour | Price (€/MWh) | Wind generation (MWh) | Revenue (€) |
+|---|---|---|---|
+| 1 | 25 | 23 | 575 |
+| 2 | 40 | 16 | 640 |
+| 3 | 42 | 15 | 630 |
+| 4 | 46 | 13 | 598 |
+| 5 | 48 | 11 | 528 |
+| 6 | 50 | 21 | 1050 |
+| 7 | 30 | 18 | 540 |
+| 8 | 35 | 17 | 595 |
+| 9 | 32 | 17.5 | 560 |
+| 10 | 28 | 18.5 | 518 |
+
+**Time-average price**
+```
+376 / 10 = 37.6 €/MWh
+```
+
+**Captured price (volume-weighted)**
+```
+6234 / 170 = 3117/85 = 36.670588 €/MWh
+```
+
+**Value factor**
+```
+3117 / 3196 = 0.9752816
+```
+
+**Assertion**
+```python
+assert value_factor(series).value_factor == pytest.approx(0.97528, rel=1e-5)
+```
+
+**Why both cases.** The 3-hour case is small enough to check by inspection; the 10-hour case exercises a non-trivial volume distribution and a fractional MWh value. Both expected values are derived from the table above, not from program output.
 
 ### Subsequent tests
 

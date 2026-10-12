@@ -1,0 +1,200 @@
+{
+  "total": 48,
+  "filters": "{\"PriceArea\": [\"DK1\"]}",
+  "sort": "HourUTC ASC",
+  "dataset": "Elspotprices",
+  "records": [
+    {
+      "HourUTC": "2025-05-31T22:00:00",
+      "SpotPriceEUR": 92.529999
+    },
+    {
+      "HourUTC": "2025-05-31T23:00:00",
+      "SpotPriceEUR": 85.220001
+    },
+    {
+      "HourUTC": "2025-06-01T00:00:00",
+      "SpotPriceEUR": 77.129997
+    },
+    {
+      "HourUTC": "2025-06-01T01:00:00",
+      "SpotPriceEUR": 74.089996
+    },
+    {
+      "HourUTC": "2025-06-01T02:00:00",
+      "SpotPriceEUR": 72.660004
+    },
+    {
+      "HourUTC": "2025-06-01T03:00:00",
+      "SpotPriceEUR": 66.110001
+    },
+    {
+      "HourUTC": "2025-06-01T04:00:00",
+      "SpotPriceEUR": 35.84
+    },
+    {
+      "HourUTC": "2025-06-01T05:00:00",
+      "SpotPriceEUR": 13.0
+    },
+    {
+      "HourUTC": "2025-06-01T06:00:00",
+      "SpotPriceEUR": 2.4
+    },
+    {
+      "HourUTC": "2025-06-01T07:00:00",
+      "SpotPriceEUR": -0.01
+    },
+    {
+      "HourUTC": "2025-06-01T08:00:00",
+      "SpotPriceEUR": -0.6
+    },
+    {
+      "HourUTC": "2025-06-01T09:00:00",
+      "SpotPriceEUR": -2.11
+    },
+    {
+      "HourUTC": "2025-06-01T10:00:00",
+      "SpotPriceEUR": -5.48
+    },
+    {
+      "HourUTC": "2025-06-01T11:00:00",
+      "SpotPriceEUR": -10.87
+    },
+    {
+      "HourUTC": "2025-06-01T12:00:00",
+      "SpotPriceEUR": -16.09
+    },
+    {
+      "HourUTC": "2025-06-01T13:00:00",
+      "SpotPriceEUR": -15.61
+    },
+    {
+      "HourUTC": "2025-06-01T14:00:00",
+      "SpotPriceEUR": -6.0
+    },
+    {
+      "HourUTC": "2025-06-01T15:00:00",
+      "SpotPriceEUR": -0.99
+    },
+    {
+      "HourUTC": "2025-06-01T16:00:00",
+      "SpotPriceEUR": 17.0
+    },
+    {
+      "HourUTC": "2025-06-01T17:00:00",
+      "SpotPriceEUR": 60.099998
+    },
+    {
+      "HourUTC": "2025-06-01T18:00:00",
+      "SpotPriceEUR": 83.099998
+    },
+    {
+      "HourUTC": "2025-06-01T19:00:00",
+      "SpotPriceEUR": 86.699997
+    },
+    {
+      "HourUTC": "2025-06-01T20:00:00",
+      "SpotPriceEUR": 92.0
+    },
+    {
+      "HourUTC": "2025-06-01T21:00:00",
+      "SpotPriceEUR": 66.889999
+    },
+    {
+      "HourUTC": "2025-06-01T22:00:00",
+      "SpotPriceEUR": 63.400002
+    },
+    {
+      "HourUTC": "2025-06-01T23:00:00",
+      "SpotPriceEUR": 54.82
+    },
+    {
+      "HourUTC": "2025-06-02T00:00:00",
+      "SpotPriceEUR": 51.630001
+    },
+    {
+      "HourUTC": "2025-06-02T01:00:00",
+      "SpotPriceEUR": 55.290001
+    },
+    {
+      "HourUTC": "2025-06-02T02:00:00",
+      "SpotPriceEUR": 58.830002
+    },
+    {
+      "HourUTC": "2025-06-02T03:00:00",
+      "SpotPriceEUR": 78.300003
+    },
+    {
+      "HourUTC": "2025-06-02T04:00:00",
+      "SpotPriceEUR": 96.5
+    },
+    {
+      "HourUTC": "2025-06-02T05:00:00",
+      "SpotPriceEUR": 117.900002
+    },
+    {
+      "HourUTC": "2025-06-02T06:00:00",
+      "SpotPriceEUR": 102.360001
+    },
+    {
+      "HourUTC": "2025-06-02T07:00:00",
+      "SpotPriceEUR": 85.599998
+    },
+    {
+      "HourUTC": "2025-06-02T08:00:00",
+      "SpotPriceEUR": 57.470001
+    },
+    {
+      "HourUTC": "2025-06-02T09:00:00",
+      "SpotPriceEUR": 33.209999
+    },
+    {
+      "HourUTC": "2025-06-02T10:00:00",
+      "SpotPriceEUR": 20.0
+    },
+    {
+      "HourUTC": "2025-06-02T11:00:00",
+      "SpotPriceEUR": 12.78
+    },
+    {
+      "HourUTC": "2025-06-02T12:00:00",
+      "SpotPriceEUR": 11.0
+    },
+    {
+      "HourUTC": "2025-06-02T13:00:00",
+      "SpotPriceEUR": 19.75
+    },
+    {
+      "HourUTC": "2025-06-02T14:00:00",
+      "SpotPriceEUR": 48.310001
+    },
+    {
+      "HourUTC": "2025-06-02T15:00:00",
+      "SpotPriceEUR": 59.599998
+    },
+    {
+      "HourUTC": "2025-06-02T16:00:00",
+      "SpotPriceEUR": 83.300003
+    },
+    {
+      "HourUTC": "2025-06-02T17:00:00",
+      "SpotPriceEUR": 109.32
+    },
+    {
+      "HourUTC": "2025-06-02T18:00:00",
+      "SpotPriceEUR": 164.690002
+    },
+    {
+      "HourUTC": "2025-06-02T19:00:00",
+      "SpotPriceEUR": 231.25
+    },
+    {
+      "HourUTC": "2025-06-02T20:00:00",
+      "SpotPriceEUR": 141.660004
+    },
+    {
+      "HourUTC": "2025-06-02T21:00:00",
+      "SpotPriceEUR": 106.360001
+    }
+  ]
+}
