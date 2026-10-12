@@ -8,8 +8,13 @@ import math
 from datetime import UTC, datetime
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
 from adapters.adapter_M1 import EnerginetRepo
-from libs.core.economics import PriceVolumeSeries, value_factor
+from libs.core.economics import PriceVolumeSeries, ValueFactorResult, value_factor
 from libs.core.ports import DateRange, Zone
 
 # June 2025 in Danish time (CEST, UTC+2): 2025-06-01T00:00 DK = 2025-05-31T22:00Z.
@@ -21,6 +26,47 @@ EXPECTED_HOURS = 720
 SANITY_BAND = (0.75, 1.05)
 PREDICTION = 0.77
 RESULT_PATH = Path("docs/decisions/m1-result.md")
+FIGURE_PATH = Path("modules/m1_data_analysis/figures/m1_captured_vs_average_dk1_2025-06.png")
+
+
+def save_chart(result: ValueFactorResult) -> None:
+    surface, ink, ink_muted = "#fcfcfb", "#0b0b0b", "#52514e"
+    wind, reference = "#2a78d6", "#a3a29d"
+    discount = 1 - result.value_factor
+
+    fig, ax = plt.subplots(figsize=(9, 5.5), facecolor=surface)
+    ax.set_facecolor(surface)
+    labels = ["Time-average price\n(every hour equal)", "Captured price\n(weighted by wind output)"]
+    values = [result.time_average_price, result.captured_price]
+    bars = ax.bar(labels, values, width=0.5, color=[reference, wind])
+    for bar, value in zip(bars, values):
+        ax.text(bar.get_x() + bar.get_width() / 2, value + 1, f"€{value:.1f}/MWh",
+                ha="center", va="bottom", fontsize=12, fontweight="bold", color=ink)
+
+    # Gap annotation: the distance between the bars is the cannibalization.
+    gap_x = bars[1].get_x() + bars[1].get_width() + 0.05
+    ax.annotate("", xy=(gap_x, result.captured_price), xytext=(gap_x, result.time_average_price),
+                arrowprops={"arrowstyle": "<->", "color": ink_muted, "lw": 1.5})
+    ax.text(gap_x + 0.04, (result.captured_price + result.time_average_price) / 2,
+            f"−{discount:.0%}\nvalue factor {result.value_factor:.2f}",
+            va="center", ha="left", fontsize=11, color=ink)
+
+    fig.text(0.03, 0.95, f"DK1 onshore wind earned {discount:.0%} less than the average power price in June 2025",
+             ha="left", va="top", fontsize=13, fontweight="bold", color=ink)
+    fig.text(0.03, 0.89, "Day-ahead spot price, EUR/MWh · 720 hours, Danish time · Source: Energi Data Service",
+             ha="left", va="top", fontsize=9.5, color=ink_muted)
+    ax.set_ylim(0, max(values) * 1.18)
+    ax.set_xlim(-0.5, 1.75)
+    ax.yaxis.set_visible(False)
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+    ax.spines["bottom"].set_color(ink_muted)
+    ax.tick_params(axis="x", colors=ink, labelsize=10.5, length=0)
+
+    FIGURE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout(rect=(0, 0, 1, 0.84))
+    fig.savefig(FIGURE_PATH, dpi=150, facecolor=surface)
+    plt.close(fig)
 
 
 def main() -> None:
@@ -71,6 +117,8 @@ def main() -> None:
         encoding="utf-8",
     )
     print(f"written: {RESULT_PATH}")
+    save_chart(result)
+    print(f"written: {FIGURE_PATH}")
 
 
 if __name__ == "__main__":
